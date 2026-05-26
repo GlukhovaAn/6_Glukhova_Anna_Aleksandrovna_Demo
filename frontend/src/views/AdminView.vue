@@ -4,8 +4,10 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../api'
 
+
 const router = useRouter()
 const auth = useAuthStore()
+
 
 const applications = ref([])
 const total = ref(0)
@@ -13,17 +15,22 @@ const loading = ref(false)
 const notification = ref('')
 const notificationType = ref('success')
 
+
 const filterStatus = ref('')
 const page = ref(1)
 const limit = 8
 const sortField = ref('created_at')
 const sortOrder = ref('DESC')
 
+
 const totalPages = computed(() => Math.ceil(total.value / limit))
 
-const statuses = ['', 'Новая', 'Идет обучение', 'Обучение завершено']
+
+const statuses = ['', 'Новая', 'Подтверждена', 'Завершена']
+
 
 onMounted(loadApplications)
+
 
 async function loadApplications() {
   loading.value = true
@@ -45,6 +52,7 @@ async function loadApplications() {
   }
 }
 
+
 async function changeStatus(id, status) {
   try {
     await api.patch(`/admin/applications/${id}/status`, { status })
@@ -55,32 +63,38 @@ async function changeStatus(id, status) {
   }
 }
 
+
 function showNotification(msg, type = 'success') {
   notification.value = msg
   notificationType.value = type
   setTimeout(() => { notification.value = '' }, 3000)
 }
 
+
 function statusClass(status) {
   if (status === 'Новая') return 'status-new'
-  if (status === 'Идет обучение') return 'status-learning'
+  if (status === 'Подтверждена') return 'status-learning'
   return 'status-done'
 }
+
 
 function formatDate(d) {
   if (!d) return ''
   return new Date(d).toLocaleDateString('ru-RU')
 }
 
+
 function applyFilter() {
   page.value = 1
   loadApplications()
 }
 
+
 function setPage(p) {
   page.value = p
   loadApplications()
 }
+
 
 function toggleSort(field) {
   if (sortField.value === field) {
@@ -92,47 +106,47 @@ function toggleSort(field) {
   loadApplications()
 }
 
+
 function logout() {
   auth.logout()
   router.push('/login')
 }
 </script>
 
+
 <template>
   <div class="admin-panel">
-    <!-- Современный навбар -->
     <nav class="navbar">
       <div class="nav-container">
         <div class="logo">
-          <span>⚓</span> Водить.РФ
+          Банкетам.Нет
           <span class="badge-admin">Администратор</span>
         </div>
         <div class="nav-links">
           <div class="user-greeting">
-            <span class="user-icon">👤</span>
-            <span>{{ auth.user?.full_name || 'Admin' }}</span>
+            {{ auth.user?.full_name || 'Admin' }}
           </div>
           <button @click="logout" class="logout-btn">
-            <span>🚪</span> Выйти
+            Выйти
           </button>
         </div>
       </div>
     </nav>
 
-    <!-- Уведомление -->
+
     <Transition name="toast">
       <div v-if="notification" class="toast" :class="notificationType === 'success' ? 'toast-success' : 'toast-error'">
-        <span class="toast-icon">{{ notificationType === 'success' ? '✅' : '⚠️' }}</span>
         {{ notification }}
       </div>
     </Transition>
 
+
     <div class="admin-content">
       <h2 class="section-title">
-        <span>📋</span> Управление заявками
+        Управление бронированиями
       </h2>
 
-      <!-- Карточка фильтров -->
+
       <div class="filters-card">
         <div class="filter-group">
           <label>Фильтр по статусу</label>
@@ -143,22 +157,22 @@ function logout() {
         </div>
         <div class="sort-group">
           <span class="sort-label">Сортировка:</span>
-          <button 
-            class="sort-chip" 
-            :class="{ active: sortField === 'created_at' }" 
+          <button
+            class="sort-chip"
+            :class="{ active: sortField === 'created_at' }"
             @click="toggleSort('created_at')"
           >
-            📅 Дата создания
+            Дата создания
             <span v-if="sortField === 'created_at'" class="sort-arrow">
               {{ sortOrder === 'DESC' ? '↓' : '↑' }}
             </span>
           </button>
-          <button 
-            class="sort-chip" 
-            :class="{ active: sortField === 'status' }" 
+          <button
+            class="sort-chip"
+            :class="{ active: sortField === 'status' }"
             @click="toggleSort('status')"
           >
-            🏷️ Статус
+            Статус
             <span v-if="sortField === 'status'" class="sort-arrow">
               {{ sortOrder === 'DESC' ? '↓' : '↑' }}
             </span>
@@ -166,20 +180,20 @@ function logout() {
         </div>
       </div>
 
-      <!-- Таблица заявок -->
+
       <div class="table-wrapper">
         <div v-if="loading" class="loading-state">
           <div class="spinner"></div>
-          <p>Загрузка заявок...</p>
+          <p>Загрузка бронирований...</p>
         </div>
         <table v-else class="applications-table">
           <thead>
             <tr>
               <th>ID</th>
               <th>Пользователь</th>
-              <th>Транспорт</th>
+              <th>Помещение</th>
               <th>Оплата</th>
-              <th>Дата начала</th>
+              <th>Дата мероприятия</th>
               <th>Создана</th>
               <th>Статус</th>
               <th>Действие</th>
@@ -195,46 +209,41 @@ function logout() {
                 </div>
               </td>
               <td>
-                <span class="transport-badge">🚢 {{ app.transport_name }}</span>
+                <span class="transport-badge">{{ app.hall_name }}</span>
               </td>
               <td>
-                <span class="payment-badge">💰 {{ app.payment_name }}</span>
+                <span class="payment-badge">{{ app.payment_name }}</span>
               </td>
-              <td>{{ formatDate(app.start_date) }}</td>
+              <td>{{ formatDate(app.event_date) }}</td>
               <td>{{ formatDate(app.created_at) }}</td>
               <td>
                 <div class="status-badge" :class="statusClass(app.status)">
-                  <span class="status-icon">
-                    <span v-if="app.status === 'Новая'">🆕</span>
-                    <span v-else-if="app.status === 'Идет обучение'">⚙️</span>
-                    <span v-else>✅</span>
-                  </span>
                   {{ app.status }}
                 </div>
               </td>
               <td>
                 <select class="status-select" :value="app.status" @change="changeStatus(app.id, $event.target.value)">
                   <option value="Новая">Новая</option>
-                  <option value="Идет обучение">Идет обучение</option>
-                  <option value="Обучение завершено">Обучение завершено</option>
+                  <option value="Подтверждена">Подтверждена</option>
+                  <option value="Завершена">Завершена</option>
                 </select>
               </td>
             </tr>
             <tr v-if="applications.length === 0 && !loading">
               <td colspan="8" class="empty-row">
-                <div class="empty-icon">📭</div>
-                <p>Заявок не найдено</p>
+                <div class="empty-icon"></div>
+                <p>Бронирований не найдено</p>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Пагинация -->
+
       <div class="pagination-container" v-if="totalPages > 1">
         <div class="pagination">
-          <button 
-            class="page-btn" 
+          <button
+            class="page-btn"
             :disabled="page === 1"
             @click="setPage(page - 1)"
           >←</button>
@@ -245,17 +254,18 @@ function logout() {
             :class="{ active: p === page }"
             @click="setPage(p)"
           >{{ p }}</button>
-          <button 
-            class="page-btn" 
+          <button
+            class="page-btn"
             :disabled="page === totalPages"
             @click="setPage(page + 1)"
           >→</button>
         </div>
-        <div class="total-info">Всего заявок: {{ total }}</div>
+        <div class="total-info">Всего бронирований: {{ total }}</div>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .admin-panel {
@@ -264,7 +274,7 @@ function logout() {
   font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
 }
 
-/* Навбар — единый стиль */
+
 .navbar {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
@@ -273,6 +283,7 @@ function logout() {
   top: 0;
   z-index: 50;
 }
+
 
 .nav-container {
   max-width: 1200px;
@@ -284,6 +295,7 @@ function logout() {
   height: 70px;
 }
 
+
 .logo {
   font-size: 24px;
   font-weight: 800;
@@ -293,9 +305,11 @@ function logout() {
   gap: 8px;
 }
 
+
 .logo span:first-child {
   font-size: 28px;
 }
+
 
 .badge-admin {
   background: linear-gradient(95deg, #0f4c5f, #1e6f5c);
@@ -307,11 +321,13 @@ function logout() {
   font-weight: 500;
 }
 
+
 .nav-links {
   display: flex;
   align-items: center;
   gap: 24px;
 }
+
 
 .user-greeting {
   display: flex;
@@ -324,9 +340,11 @@ function logout() {
   color: #1e6f5c;
 }
 
+
 .user-icon {
   font-size: 18px;
 }
+
 
 .logout-btn {
   background: none;
@@ -342,16 +360,18 @@ function logout() {
   transition: all 0.2s;
 }
 
+
 .logout-btn:hover {
   background: #fee2e2;
 }
 
-/* Контент */
+
 .admin-content {
   max-width: 1100px;
   margin: 32px auto;
   padding: 0 24px;
 }
+
 
 .section-title {
   font-size: 28px;
@@ -363,7 +383,7 @@ function logout() {
   gap: 12px;
 }
 
-/* Карточка фильтров */
+
 .filters-card {
   background: white;
   border-radius: 24px;
@@ -377,10 +397,12 @@ function logout() {
   gap: 20px;
 }
 
+
 .filter-group {
   flex: 2;
   min-width: 180px;
 }
+
 
 .filter-group label {
   display: block;
@@ -389,6 +411,7 @@ function logout() {
   color: #1e2f3e;
   margin-bottom: 8px;
 }
+
 
 .filter-select {
   width: 100%;
@@ -401,11 +424,13 @@ function logout() {
   transition: all 0.2s;
 }
 
+
 .filter-select:focus {
   outline: none;
   border-color: #2c7da0;
   box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.1);
 }
+
 
 .sort-group {
   flex: 3;
@@ -415,11 +440,13 @@ function logout() {
   flex-wrap: wrap;
 }
 
+
 .sort-label {
   font-size: 14px;
   color: #5a6e7c;
   font-weight: 500;
 }
+
 
 .sort-chip {
   background: #f1f5f9;
@@ -436,21 +463,24 @@ function logout() {
   color: #2c3e50;
 }
 
+
 .sort-chip.active {
   background: linear-gradient(95deg, #0f4c5f, #1e6f5c);
   color: white;
 }
 
+
 .sort-chip:hover:not(.active) {
   background: #e6edf4;
 }
+
 
 .sort-arrow {
   font-size: 14px;
   margin-left: 4px;
 }
 
-/* Таблица */
+
 .table-wrapper {
   background: white;
   border-radius: 24px;
@@ -458,11 +488,13 @@ function logout() {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
+
 .applications-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
 }
+
 
 .applications-table th {
   background: #f8fafc;
@@ -473,15 +505,18 @@ function logout() {
   border-bottom: 1px solid #e2e8f0;
 }
 
+
 .applications-table td {
   padding: 16px;
   border-bottom: 1px solid #f0f2f5;
   vertical-align: middle;
 }
 
+
 .table-row:hover td {
   background: #f9fbfd;
 }
+
 
 .app-id {
   font-weight: 600;
@@ -489,21 +524,25 @@ function logout() {
   font-family: monospace;
 }
 
+
 .user-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
+
 .user-name {
   font-weight: 500;
   color: #0a2b44;
 }
 
+
 .user-login {
   font-size: 12px;
   color: #7f8c8d;
 }
+
 
 .transport-badge,
 .payment-badge {
@@ -516,7 +555,7 @@ function logout() {
   font-size: 13px;
 }
 
-/* Статус-бейджи (как в кабинете) */
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -528,22 +567,25 @@ function logout() {
   width: fit-content;
 }
 
+
 .status-new {
   background: #fff7e5;
   color: #b85c00;
 }
+
 
 .status-learning {
   background: #e0f2fe;
   color: #0369a1;
 }
 
+
 .status-done {
   background: #d1fae5;
   color: #065f46;
 }
 
-/* Селект статуса */
+
 .status-select {
   padding: 8px 12px;
   border: 1px solid #cbd5e1;
@@ -555,9 +597,11 @@ function logout() {
   transition: all 0.2s;
 }
 
+
 .status-select:hover {
   border-color: #2c7da0;
 }
+
 
 .status-select:focus {
   outline: none;
@@ -565,11 +609,12 @@ function logout() {
   box-shadow: 0 0 0 2px rgba(44, 125, 160, 0.2);
 }
 
-/* Пустое состояние */
+
 .empty-row td {
   text-align: center;
   padding: 48px 16px;
 }
+
 
 .empty-icon {
   font-size: 48px;
@@ -577,16 +622,18 @@ function logout() {
   opacity: 0.5;
 }
 
+
 .empty-row p {
   color: #5a6e7c;
   font-size: 14px;
 }
 
-/* Загрузка */
+
 .loading-state {
   text-align: center;
   padding: 60px 20px;
 }
+
 
 .spinner {
   width: 40px;
@@ -598,11 +645,12 @@ function logout() {
   animation: spin 0.8s linear infinite;
 }
 
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Пагинация */
+
 .pagination-container {
   margin-top: 24px;
   display: flex;
@@ -612,11 +660,13 @@ function logout() {
   gap: 16px;
 }
 
+
 .pagination {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
+
 
 .page-btn {
   min-width: 40px;
@@ -631,10 +681,12 @@ function logout() {
   transition: all 0.2s;
 }
 
+
 .page-btn:hover:not(:disabled) {
   background: #eef2f5;
   border-color: #1e6f5c;
 }
+
 
 .page-btn.active {
   background: linear-gradient(95deg, #0f4c5f, #1e6f5c);
@@ -642,10 +694,12 @@ function logout() {
   border-color: transparent;
 }
 
+
 .page-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 
 .total-info {
   background: #eef2f5;
@@ -656,7 +710,7 @@ function logout() {
   font-weight: 500;
 }
 
-/* Уведомление */
+
 .toast {
   position: fixed;
   top: 24px;
@@ -673,11 +727,13 @@ function logout() {
   backdrop-filter: blur(8px);
 }
 
+
 .toast-success {
   background: rgba(209, 250, 229, 0.95);
   color: #065f46;
   border-left: 4px solid #10b981;
 }
+
 
 .toast-error {
   background: rgba(254, 226, 226, 0.95);
@@ -685,9 +741,11 @@ function logout() {
   border-left: 4px solid #ef4444;
 }
 
+
 .toast-icon {
   font-size: 18px;
 }
+
 
 .toast-enter-active, .toast-leave-active {
   transition: all 0.3s ease;
@@ -697,7 +755,7 @@ function logout() {
   opacity: 0;
 }
 
-/* Адаптивность */
+
 @media (max-width: 820px) {
   .nav-container {
     padding: 0 16px;
@@ -721,6 +779,7 @@ function logout() {
   }
 }
 
+
 @media (max-width: 640px) {
   .applications-table th,
   .applications-table td {
@@ -736,3 +795,5 @@ function logout() {
   }
 }
 </style>
+
+

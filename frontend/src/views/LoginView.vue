@@ -3,8 +3,10 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 
+
 const router = useRouter();
 const auth = useAuthStore();
+
 
 const login = ref("");
 const password = ref("");
@@ -12,6 +14,7 @@ const error = ref("");
 const loading = ref(false);
 const showPassword = ref(false);
 const rememberMe = ref(false);
+
 
 async function submit() {
   error.value = "";
@@ -29,6 +32,7 @@ async function submit() {
     loading.value = false;
   }
 }
+
 
 async function adminSubmit() {
   error.value = "";
@@ -48,16 +52,18 @@ async function adminSubmit() {
 }
 </script>
 
+
 <template>
   <div class="login-page">
     <div class="login-left">
-      <img src="/images/5.jpg" alt="Водить.РФ" class="bg-img" />
+      <img src="/images/5.jpg" alt="Банкетам.Нет" class="bg-img" />
       <div class="overlay">
-        <div class="brand"><span>⚓</span> Водить.РФ</div>
-        <p>Курсы вождения речного транспорта</p>
+        <div class="brand">Банкетам.Нет</div>
+        <p>Бронирование банкетных залов и помещений</p>
         <div class="wave"></div>
       </div>
     </div>
+
 
     <div class="login-right">
       <div class="login-card">
@@ -66,17 +72,19 @@ async function adminSubmit() {
           <p>Войдите, чтобы продолжить</p>
         </div>
 
+
         <transition name="fade">
           <div v-if="error" class="alert alert-error">
-            <span class="alert-icon">⚠️</span> {{ error }}
+            {{ error }}
           </div>
         </transition>
+
 
         <form @submit.prevent="submit">
           <div class="input-group">
             <label>Логин</label>
             <div class="input-icon">
-              <span class="icon">👤</span>
+              <span class="icon"></span>
               <input
                 v-model="login"
                 type="text"
@@ -86,10 +94,11 @@ async function adminSubmit() {
             </div>
           </div>
 
+
           <div class="input-group">
             <label>Пароль</label>
             <div class="input-icon">
-              <span class="icon">🔒</span>
+              <span class="icon"></span>
               <input
                 v-model="password"
                 :type="showPassword ? 'text' : 'password'"
@@ -101,10 +110,11 @@ async function adminSubmit() {
                 class="toggle-password"
                 @click="showPassword = !showPassword"
               >
-                {{ showPassword ? "🙈" : "👁️" }}
+                {{ showPassword ? "Скрыть" : "Показать" }}
               </button>
             </div>
           </div>
+
 
           <div class="options">
             <label class="checkbox">
@@ -114,23 +124,27 @@ async function adminSubmit() {
             <a href="#" class="forgot-link">Забыли пароль?</a>
           </div>
 
+
           <button type="submit" class="btn btn-primary" :disabled="loading">
             <span v-if="loading" class="spinner"></span>
-            <span v-else>🔑 Войти как пользователь</span>
+            <span v-else>Войти как пользователь</span>
           </button>
         </form>
+
 
         <div class="divider">
           <span>или</span>
         </div>
+
 
         <button
           class="btn btn-outline"
           @click="adminSubmit"
           :disabled="loading"
         >
-          🛡️ Войти как администратор
+          Войти как администратор
         </button>
+
 
         <p class="register-link">
           Нет аккаунта?
@@ -141,6 +155,7 @@ async function adminSubmit() {
   </div>
 </template>
 
+
 <style scoped>
 /* Переменные и общие стили */
 .login-page {
@@ -149,12 +164,14 @@ async function adminSubmit() {
   font-family: "Segoe UI", Roboto, system-ui, sans-serif;
 }
 
+
 /* Левая панель с изображением */
 .login-left {
   flex: 1.2;
   position: relative;
   overflow: hidden;
 }
+
 
 .bg-img {
   width: 100%;
@@ -163,9 +180,11 @@ async function adminSubmit() {
   transition: transform 0.3s ease;
 }
 
+
 .login-left:hover .bg-img {
   transform: scale(1.03);
 }
+
 
 .overlay {
   position: absolute;
@@ -184,6 +203,7 @@ async function adminSubmit() {
   backdrop-filter: blur(2px);
 }
 
+
 .brand {
   font-size: 46px;
   font-weight: 800;
@@ -194,16 +214,19 @@ async function adminSubmit() {
   gap: 8px;
 }
 
+
 .brand span {
   font-size: 52px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
+
 
 .overlay p {
   font-size: 1.2rem;
   opacity: 0.9;
   max-width: 80%;
 }
+
 
 .wave {
   position: absolute;
@@ -218,6 +241,7 @@ async function adminSubmit() {
   );
 }
 
+
 /* Правая панель */
 .login-right {
   flex: 1;
@@ -227,6 +251,7 @@ async function adminSubmit() {
   background: linear-gradient(145deg, #f8fafc 0%, #eef2f5 100%);
   padding: 24px;
 }
+
 
 .login-card {
   max-width: 420px;
@@ -240,15 +265,18 @@ async function adminSubmit() {
     box-shadow 0.2s ease;
 }
 
+
 .login-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.25);
 }
 
+
 .card-header {
   text-align: center;
   margin-bottom: 28px;
 }
+
 
 .card-header h2 {
   font-size: 28px;
@@ -257,11 +285,13 @@ async function adminSubmit() {
   margin: 0 0 8px 0;
 }
 
+
 .card-header p {
   color: #5a6e7c;
   font-size: 14px;
   margin: 0;
 }
+
 
 /* Ошибка */
 .alert {
@@ -274,15 +304,18 @@ async function adminSubmit() {
   gap: 10px;
 }
 
+
 .alert-error {
   background: #fee2e2;
   color: #b91c1c;
   border-left: 4px solid #ef4444;
 }
 
+
 .alert-icon {
   font-size: 18px;
 }
+
 
 .fade-enter-active,
 .fade-leave-active {
@@ -293,10 +326,12 @@ async function adminSubmit() {
   opacity: 0;
 }
 
+
 /* Поля ввода */
 .input-group {
   margin-bottom: 20px;
 }
+
 
 .input-group label {
   display: block;
@@ -306,11 +341,13 @@ async function adminSubmit() {
   font-size: 14px;
 }
 
+
 .input-icon {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 
 .input-icon .icon {
   position: absolute;
@@ -319,6 +356,7 @@ async function adminSubmit() {
   color: #7f8c8d;
   pointer-events: none;
 }
+
 
 .input-icon input {
   width: 100%;
@@ -331,26 +369,30 @@ async function adminSubmit() {
   outline: none;
 }
 
+
 .input-icon input:focus {
   border-color: #2c7da0;
   box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.1);
 }
+
 
 .toggle-password {
   position: absolute;
   right: 14px;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 14px;
   cursor: pointer;
   padding: 0;
   color: #7f8c8d;
   transition: color 0.2s;
 }
 
+
 .toggle-password:hover {
   color: #2c7da0;
 }
+
 
 /* Чекбокс и forgot */
 .options {
@@ -361,6 +403,7 @@ async function adminSubmit() {
   font-size: 13px;
 }
 
+
 .checkbox {
   display: flex;
   align-items: center;
@@ -369,6 +412,7 @@ async function adminSubmit() {
   color: #3a5468;
 }
 
+
 .checkbox input {
   width: 16px;
   height: 16px;
@@ -376,15 +420,18 @@ async function adminSubmit() {
   accent-color: #2c7da0;
 }
 
+
 .forgot-link {
   color: #2c7da0;
   text-decoration: none;
   font-weight: 500;
 }
 
+
 .forgot-link:hover {
   text-decoration: underline;
 }
+
 
 /* Кнопки */
 .btn {
@@ -402,11 +449,13 @@ async function adminSubmit() {
   gap: 8px;
 }
 
+
 .btn-primary {
   background: linear-gradient(95deg, #0f4c5f, #1e6f5c);
   color: white;
   box-shadow: 0 8px 18px rgba(15, 76, 95, 0.2);
 }
+
 
 .btn-primary:hover:not(:disabled) {
   transform: scale(1.02);
@@ -414,21 +463,25 @@ async function adminSubmit() {
   box-shadow: 0 10px 22px rgba(15, 76, 95, 0.3);
 }
 
+
 .btn-outline {
   background: transparent;
   border: 1.5px solid #1e6f5c;
   color: #1e6f5c;
 }
 
+
 .btn-outline:hover:not(:disabled) {
   background: #eef6f3;
   transform: translateY(-1px);
 }
 
+
 .btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
+
 
 .spinner {
   display: inline-block;
@@ -440,11 +493,13 @@ async function adminSubmit() {
   animation: spin 0.6s linear infinite;
 }
 
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
+
 
 /* Разделитель */
 .divider {
@@ -452,6 +507,7 @@ async function adminSubmit() {
   margin: 24px 0;
   position: relative;
 }
+
 
 .divider::before,
 .divider::after {
@@ -463,6 +519,7 @@ async function adminSubmit() {
   background: #dce5ec;
 }
 
+
 .divider::before {
   left: 0;
 }
@@ -470,12 +527,14 @@ async function adminSubmit() {
   right: 0;
 }
 
+
 .divider span {
   background: white;
   padding: 0 12px;
   color: #8ba0ae;
   font-size: 13px;
 }
+
 
 /* Ссылка регистрации */
 .register-link {
@@ -485,6 +544,7 @@ async function adminSubmit() {
   color: #5e7a93;
 }
 
+
 .register-link a {
   color: #1e6f5c;
   font-weight: 600;
@@ -492,9 +552,11 @@ async function adminSubmit() {
   margin-left: 5px;
 }
 
+
 .register-link a:hover {
   text-decoration: underline;
 }
+
 
 /* Адаптивность */
 @media (max-width: 820px) {
@@ -508,6 +570,7 @@ async function adminSubmit() {
     padding: 32px 24px;
   }
 }
+
 
 @media (max-width: 480px) {
   .login-card {
@@ -524,3 +587,6 @@ async function adminSubmit() {
   }
 }
 </style>
+
+
+

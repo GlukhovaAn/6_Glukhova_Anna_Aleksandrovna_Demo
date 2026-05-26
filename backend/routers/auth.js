@@ -4,8 +4,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+
 router.post("/register", async (req, res) => {
   const { login, password, full_name, birth_date, phone, email } = req.body;
+
 
   if (!/^[a-zA-Z0-9]{6,}$/.test(login)) {
     return res
@@ -16,6 +18,7 @@ router.post("/register", async (req, res) => {
     return res.status(400).json({ message: "Пароль: минимум 8 символов" });
   }
 
+
   try {
     const exists = await pool.query("SELECT id FROM users WHERE login = $1", [
       login,
@@ -23,6 +26,7 @@ router.post("/register", async (req, res) => {
     if (exists.rows.length > 0) {
       return res.status(400).json({ message: "Логин уже занят" });
     }
+
 
     const hash = await bcrypt.hash(password, 10);
     await pool.query(
@@ -35,6 +39,7 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера", error: err.message });
   }
 });
+
 
 router.post("/login", async (req, res) => {
   const { login, password } = req.body;
@@ -50,6 +55,7 @@ router.post("/login", async (req, res) => {
     if (!valid)
       return res.status(400).json({ message: "Неверный логин или пароль" });
 
+
     const token = jwt.sign(
       { id: user.id, role: "user" },
       process.env.JWT_SECRET,
@@ -63,6 +69,7 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 });
+
 
 router.post("/admin/login", async (req, res) => {
   const { login, password } = req.body;
@@ -88,4 +95,8 @@ router.post("/admin/login", async (req, res) => {
   }
 });
 
+
 module.exports = router;
+
+
+

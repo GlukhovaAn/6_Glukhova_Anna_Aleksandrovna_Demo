@@ -2,6 +2,7 @@ const router = require("express").Router();
 const pool = require("../server");
 const auth = require("../middleware/authMidleware");
 
+
 router.post("/", auth, async (req, res) => {
   const { application_id, text } = req.body;
   try {
@@ -10,13 +11,12 @@ router.post("/", auth, async (req, res) => {
       [application_id, req.user.id]
     );
     if (app.rows.length === 0)
-      return res.status(404).json({ message: "Заявка не найдена" });
+      return res.status(404).json({ message: "Бронирование не найдено" });
     if (app.rows[0].status === "Новая") {
-      return res
-        .status(403)
-        .json({
-          message: "Отзыв можно оставить только после изменения статуса",
-        });
+      return res.status(403).json({
+        message:
+          "Отзыв можно оставить только после подтверждения или завершения бронирования",
+      });
     }
     await pool.query(
       "INSERT INTO reviews (user_id, application_id, text) VALUES ($1,$2,$3)",
@@ -28,4 +28,8 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
+
 module.exports = router;
+
+
+

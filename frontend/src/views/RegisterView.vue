@@ -3,8 +3,10 @@ import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 
+
 const router = useRouter();
 const auth = useAuthStore();
+
 
 const form = reactive({
   login: "",
@@ -15,11 +17,13 @@ const form = reactive({
   email: "",
 });
 
+
 const errors = ref({});
 const success = ref("");
 const loading = ref(false);
 const showPassword = ref(false);
 const agreeTerms = ref(false);
+
 
 function validate() {
   errors.value = {};
@@ -51,6 +55,7 @@ function validate() {
   return Object.keys(errors.value).length === 0;
 }
 
+
 async function submit() {
   success.value = "";
   if (!validate()) return;
@@ -69,16 +74,18 @@ async function submit() {
 }
 </script>
 
+
 <template>
   <div class="register-page">
     <div class="register-left">
-      <img src="/images/5.jpg" alt="Водить.РФ" class="bg-img" />
+      <img src="/images/5.jpg" alt="Банкетам.Нет" class="bg-img" />
       <div class="overlay">
-        <div class="brand"><span>⚓</span> Водить.РФ</div>
-        <p>Курсы вождения речного транспорта</p>
+        <div class="brand">Банкетам.Нет</div>
+        <p>Бронирование банкетных залов и помещений</p>
         <div class="wave"></div>
       </div>
     </div>
+
 
     <div class="register-right">
       <div class="register-card">
@@ -87,23 +94,26 @@ async function submit() {
           <p>Заполните форму для регистрации</p>
         </div>
 
+
         <transition name="fade">
           <div v-if="errors.general" class="alert alert-error">
-            <span class="alert-icon">⚠️</span> {{ errors.general }}
+            {{ errors.general }}
           </div>
         </transition>
 
+
         <transition name="fade">
           <div v-if="success" class="alert alert-success">
-            <span class="alert-icon">✅</span> {{ success }}
+            {{ success }}
           </div>
         </transition>
+
 
         <form @submit.prevent="submit">
           <div class="input-group" :class="{ error: errors.login }">
             <label>Логин *</label>
             <div class="input-icon">
-              <span class="icon">👤</span>
+              <span class="icon"></span>
               <input
                 v-model="form.login"
                 type="text"
@@ -116,10 +126,11 @@ async function submit() {
             }}</span>
           </div>
 
+
           <div class="input-group" :class="{ error: errors.password }">
             <label>Пароль *</label>
             <div class="input-icon">
-              <span class="icon">🔒</span>
+              <span class="icon"></span>
               <input
                 v-model="form.password"
                 :type="showPassword ? 'text' : 'password'"
@@ -131,7 +142,7 @@ async function submit() {
                 class="toggle-password"
                 @click="showPassword = !showPassword"
               >
-                {{ showPassword ? "🙈" : "👁️" }}
+                {{ showPassword ? "Скрыть" : "Показать" }}
               </button>
             </div>
             <span v-if="errors.password" class="error-msg">{{
@@ -139,10 +150,11 @@ async function submit() {
             }}</span>
           </div>
 
+
           <div class="input-group" :class="{ error: errors.full_name }">
             <label>ФИО *</label>
             <div class="input-icon">
-              <span class="icon">📝</span>
+              <span class="icon"></span>
               <input
                 v-model="form.full_name"
                 type="text"
@@ -154,10 +166,11 @@ async function submit() {
             }}</span>
           </div>
 
+
           <div class="input-group" :class="{ error: errors.birth_date }">
             <label>Дата рождения *</label>
             <div class="input-icon">
-              <span class="icon">🎂</span>
+              <span class="icon"></span>
               <input v-model="form.birth_date" type="date" />
             </div>
             <span v-if="errors.birth_date" class="error-msg">{{
@@ -165,10 +178,11 @@ async function submit() {
             }}</span>
           </div>
 
+
           <div class="input-group" :class="{ error: errors.phone }">
             <label>Телефон *</label>
             <div class="input-icon">
-              <span class="icon">📞</span>
+              <span class="icon"></span>
               <input
                 v-model="form.phone"
                 type="tel"
@@ -180,10 +194,11 @@ async function submit() {
             }}</span>
           </div>
 
+
           <div class="input-group" :class="{ error: errors.email }">
             <label>E-mail *</label>
             <div class="input-icon">
-              <span class="icon">✉️</span>
+              <span class="icon"></span>
               <input
                 v-model="form.email"
                 type="email"
@@ -194,6 +209,7 @@ async function submit() {
               errors.email
             }}</span>
           </div>
+
 
           <div class="terms-group" :class="{ error: errors.terms }">
             <label class="checkbox">
@@ -210,23 +226,27 @@ async function submit() {
             }}</span>
           </div>
 
+
           <button type="submit" class="btn btn-primary" :disabled="loading">
             <span v-if="loading" class="spinner"></span>
-            <span v-else>🚀 Зарегистрироваться</span>
+            <span v-else>Зарегистрироваться</span>
           </button>
         </form>
+
 
         <div class="divider">
           <span>уже есть аккаунт?</span>
         </div>
 
+
         <button class="btn btn-outline" @click="router.push('/login')">
-          🔑 Войти в систему
+          Войти в систему
         </button>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 /* Общие переменные (соответствуют странице логина) */
@@ -236,12 +256,14 @@ async function submit() {
   font-family: "Segoe UI", Roboto, system-ui, sans-serif;
 }
 
+
 /* Левая панель */
 .register-left {
   flex: 1.2;
   position: relative;
   overflow: hidden;
 }
+
 
 .bg-img {
   width: 100%;
@@ -250,9 +272,11 @@ async function submit() {
   transition: transform 0.3s ease;
 }
 
+
 .register-left:hover .bg-img {
   transform: scale(1.03);
 }
+
 
 .overlay {
   position: absolute;
@@ -271,6 +295,7 @@ async function submit() {
   backdrop-filter: blur(2px);
 }
 
+
 .brand {
   font-size: 46px;
   font-weight: 800;
@@ -281,16 +306,19 @@ async function submit() {
   gap: 8px;
 }
 
+
 .brand span {
   font-size: 52px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
+
 
 .overlay p {
   font-size: 1.2rem;
   opacity: 0.9;
   max-width: 80%;
 }
+
 
 .wave {
   position: absolute;
@@ -305,6 +333,7 @@ async function submit() {
   );
 }
 
+
 /* Правая панель с прокруткой (много полей) */
 .register-right {
   flex: 1;
@@ -315,6 +344,7 @@ async function submit() {
   padding: 32px 24px;
   overflow-y: auto;
 }
+
 
 .register-card {
   max-width: 480px;
@@ -328,15 +358,18 @@ async function submit() {
     box-shadow 0.2s ease;
 }
 
+
 .register-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.25);
 }
 
+
 .card-header {
   text-align: center;
   margin-bottom: 28px;
 }
+
 
 .card-header h2 {
   font-size: 28px;
@@ -345,11 +378,13 @@ async function submit() {
   margin: 0 0 8px 0;
 }
 
+
 .card-header p {
   color: #5a6e7c;
   font-size: 14px;
   margin: 0;
 }
+
 
 /* Сообщения alert */
 .alert {
@@ -362,11 +397,13 @@ async function submit() {
   gap: 10px;
 }
 
+
 .alert-error {
   background: #fee2e2;
   color: #b91c1c;
   border-left: 4px solid #ef4444;
 }
+
 
 .alert-success {
   background: #d1fae5;
@@ -374,9 +411,11 @@ async function submit() {
   border-left: 4px solid #10b981;
 }
 
+
 .alert-icon {
   font-size: 18px;
 }
+
 
 .fade-enter-active,
 .fade-leave-active {
@@ -387,10 +426,12 @@ async function submit() {
   opacity: 0;
 }
 
+
 /* Поля ввода */
 .input-group {
   margin-bottom: 20px;
 }
+
 
 .input-group label {
   display: block;
@@ -400,11 +441,13 @@ async function submit() {
   font-size: 14px;
 }
 
+
 .input-icon {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 
 .input-icon .icon {
   position: absolute;
@@ -413,6 +456,7 @@ async function submit() {
   color: #7f8c8d;
   pointer-events: none;
 }
+
 
 .input-icon input {
   width: 100%;
@@ -425,26 +469,30 @@ async function submit() {
   outline: none;
 }
 
+
 .input-icon input:focus {
   border-color: #2c7da0;
   box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.1);
 }
+
 
 .toggle-password {
   position: absolute;
   right: 14px;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 14px;
   cursor: pointer;
   padding: 0;
   color: #7f8c8d;
   transition: color 0.2s;
 }
 
+
 .toggle-password:hover {
   color: #2c7da0;
 }
+
 
 .error-msg {
   display: block;
@@ -454,14 +502,17 @@ async function submit() {
   margin-left: 12px;
 }
 
+
 .input-group.error input {
   border-color: #e53e3e;
 }
+
 
 /* Чекбокс согласия */
 .terms-group {
   margin: 20px 0;
 }
+
 
 .checkbox {
   display: flex;
@@ -472,6 +523,7 @@ async function submit() {
   font-size: 13px;
 }
 
+
 .checkbox input {
   width: 16px;
   height: 16px;
@@ -479,14 +531,17 @@ async function submit() {
   accent-color: #2c7da0;
 }
 
+
 .checkbox a {
   color: #2c7da0;
   text-decoration: none;
 }
 
+
 .checkbox a:hover {
   text-decoration: underline;
 }
+
 
 /* Кнопки */
 .btn {
@@ -504,11 +559,13 @@ async function submit() {
   gap: 8px;
 }
 
+
 .btn-primary {
   background: linear-gradient(95deg, #0f4c5f, #1e6f5c);
   color: white;
   box-shadow: 0 8px 18px rgba(15, 76, 95, 0.2);
 }
+
 
 .btn-primary:hover:not(:disabled) {
   transform: scale(1.02);
@@ -516,21 +573,25 @@ async function submit() {
   box-shadow: 0 10px 22px rgba(15, 76, 95, 0.3);
 }
 
+
 .btn-outline {
   background: transparent;
   border: 1.5px solid #1e6f5c;
   color: #1e6f5c;
 }
 
+
 .btn-outline:hover:not(:disabled) {
   background: #eef6f3;
   transform: translateY(-1px);
 }
 
+
 .btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
+
 
 .spinner {
   display: inline-block;
@@ -542,11 +603,13 @@ async function submit() {
   animation: spin 0.6s linear infinite;
 }
 
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
+
 
 /* Разделитель */
 .divider {
@@ -554,6 +617,7 @@ async function submit() {
   margin: 24px 0 16px;
   position: relative;
 }
+
 
 .divider::before,
 .divider::after {
@@ -565,6 +629,7 @@ async function submit() {
   background: #dce5ec;
 }
 
+
 .divider::before {
   left: 0;
 }
@@ -572,12 +637,14 @@ async function submit() {
   right: 0;
 }
 
+
 .divider span {
   background: white;
   padding: 0 12px;
   color: #8ba0ae;
   font-size: 13px;
 }
+
 
 /* Адаптивность */
 @media (max-width: 820px) {
@@ -593,6 +660,7 @@ async function submit() {
   }
 }
 
+
 @media (max-width: 480px) {
   .register-card {
     padding: 24px 16px;
@@ -606,3 +674,4 @@ async function submit() {
   }
 }
 </style>
+

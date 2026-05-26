@@ -4,39 +4,51 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import api from "../api";
 
+
 const router = useRouter();
 const auth = useAuthStore();
 
-const transportTypes = ref([]);
-const paymentMethods = ref([]);
+
+const hallTypes = ref([
+  { name: "зал", id: 1 },
+  { name: "ресторан", id: 2 },
+  { name: "летняя веранда", id: 3 },
+  { name: "закрытая веранда", id: 4 },
+]);
+const paymentMethods = ref([
+  { name: "банковской картой", id: 1 },
+  { name: "Спб", id: 2 },
+  { name: "наличными", id: 3 },
+]);
 const form = ref({
-  transport_type_id: "",
+  hall_type_id: "",
   payment_method_id: "",
-  start_date: "",
+  event_date: "",
 });
 const errors = ref({});
 const success = ref("");
 const loading = ref(false);
 
+
 onMounted(async () => {
-  const [t, p] = await Promise.all([
-    api.get("/applications/transport-types"),
+  const [h, p] = await Promise.all([
+    api.get("/applications/hall-types"),
     api.get("/applications/payment-methods"),
   ]);
-  transportTypes.value = t.data;
+  hallTypes.value = h.data;
   paymentMethods.value = p.data;
 });
 
+
 function validate() {
   errors.value = {};
-  if (!form.value.transport_type_id)
-    errors.value.transport = "Выберите вид транспорта";
+  if (!form.value.hall_type_id) errors.value.hall = "Выберите тип помещения";
   if (!form.value.payment_method_id)
     errors.value.payment = "Выберите способ оплаты";
-  if (!form.value.start_date)
-    errors.value.date = "Укажите дату начала обучения";
+  if (!form.value.event_date) errors.value.date = "Укажите дату мероприятия";
   return Object.keys(errors.value).length === 0;
 }
+
 
 async function submit() {
   success.value = "";
@@ -44,15 +56,16 @@ async function submit() {
   loading.value = true;
   try {
     await api.post("/applications", form.value);
-    success.value = "Заявка успешно подана! Перенаправляем...";
+    success.value = "Бронирование успешно создано! Перенаправляем...";
     setTimeout(() => router.push("/cabinet"), 1500);
   } catch (e) {
     errors.value.general =
-      e.response?.data?.message || "Ошибка при подаче заявки";
+      e.response?.data?.message || "Ошибка при создании бронирования";
   } finally {
     loading.value = false;
   }
 }
+
 
 function formatDisplay(val) {
   if (!val) return "";
@@ -61,15 +74,15 @@ function formatDisplay(val) {
 }
 </script>
 
+
 <template>
   <div class="application-page">
-    <!-- Навбар -->
     <nav class="navbar">
       <div class="nav-container">
-        <div class="logo"><span>⚓</span> Водить.РФ</div>
+        <div class="logo">Банкетам.Нет</div>
         <div class="nav-links">
           <router-link to="/cabinet" class="nav-link">
-            <span>👤</span> Личный кабинет
+            Личный кабинет
           </router-link>
           <button
             @click="
@@ -78,53 +91,53 @@ function formatDisplay(val) {
             "
             class="logout-btn"
           >
-            <span>🚪</span> Выйти
+            Выйти
           </button>
         </div>
       </div>
     </nav>
 
+
     <div class="application-content">
-      <!-- Левая колонка: форма -->
       <div class="form-card">
         <div class="card-header">
-          <h2>📝 Новая заявка</h2>
-          <p>Заполните форму для записи на курс</p>
+          <h2>Новое бронирование</h2>
+          <p>Заполните форму для бронирования помещения</p>
         </div>
 
-        <!-- Уведомления -->
+
         <transition name="fade">
           <div v-if="errors.general" class="alert alert-error">
-            <span>⚠️</span> {{ errors.general }}
+            {{ errors.general }}
           </div>
         </transition>
         <transition name="fade">
           <div v-if="success" class="alert alert-success">
-            <span>✅</span> {{ success }}
+            {{ success }}
           </div>
         </transition>
 
+
         <form @submit.prevent="submit">
-          <div class="input-group" :class="{ error: errors.transport }">
-            <label>Вид транспорта *</label>
+          <div class="input-group" :class="{ error: errors.hall }">
+            <label>Тип помещения *</label>
             <div class="select-wrapper">
-              <span class="select-icon">🚢</span>
-              <select v-model="form.transport_type_id">
-                <option value="" disabled>Выберите вид транспорта</option>
-                <option v-for="t in transportTypes" :key="t.id" :value="t.id">
-                  {{ t.name }}
+              <span class="select-icon"></span>
+              <select v-model="form.hall_type_id">
+                <option value="" disabled>Выберите тип помещения</option>
+                <option v-for="h in hallTypes" :key="h.id" :value="h.id">
+                  {{ h.name }}
                 </option>
               </select>
             </div>
-            <span v-if="errors.transport" class="error-msg">{{
-              errors.transport
-            }}</span>
+            <span v-if="errors.hall" class="error-msg">{{ errors.hall }}</span>
           </div>
+
 
           <div class="input-group" :class="{ error: errors.payment }">
             <label>Способ оплаты *</label>
             <div class="select-wrapper">
-              <span class="select-icon">💰</span>
+              <span class="select-icon"></span>
               <select v-model="form.payment_method_id">
                 <option value="" disabled>Выберите способ оплаты</option>
                 <option v-for="p in paymentMethods" :key="p.id" :value="p.id">
@@ -137,40 +150,44 @@ function formatDisplay(val) {
             }}</span>
           </div>
 
+
           <div class="input-group" :class="{ error: errors.date }">
-            <label>Дата начала обучения *</label>
+            <label>Дата мероприятия *</label>
             <div class="date-wrapper">
-              <span class="date-icon">📅</span>
-              <input v-model="form.start_date" type="date" />
+              <span class="date-icon"></span>
+              <input v-model="form.event_date" type="date" />
             </div>
-            <span v-if="form.start_date" class="date-hint">
-              Выбрано: {{ formatDisplay(form.start_date) }}
+            <span v-if="form.event_date" class="date-hint">
+              Выбрано: {{ formatDisplay(form.event_date) }}
             </span>
             <span v-if="errors.date" class="error-msg">{{ errors.date }}</span>
           </div>
 
+
           <div class="form-actions">
             <button type="submit" class="btn btn-primary" :disabled="loading">
               <span v-if="loading" class="spinner"></span>
-              <span v-else>✉️ Отправить заявку</span>
+              <span v-else>Забронировать</span>
             </button>
             <router-link to="/cabinet" class="btn btn-outline">
-              ← Отмена
+              Отмена
             </router-link>
           </div>
         </form>
       </div>
 
-      <!-- Правая колонка: информация -->
+
       <div class="info-side">
         <div class="image-card">
-          <img src="/images/5.jpg" alt="Обучение" />
+          <img src="/images/5.jpg" alt="Банкет" />
         </div>
         <div class="info-card">
-          <h3>📖 Как это работает?</h3>
+          <h3>Как это работает?</h3>
           <ul class="steps-list">
-            <li><span class="step-num">1</span> Выберите вид транспорта</li>
-            <li><span class="step-num">2</span> Укажите удобную дату начала</li>
+            <li><span class="step-num">1</span> Выберите тип помещения</li>
+            <li>
+              <span class="step-num">2</span> Укажите удобную дату мероприятия
+            </li>
             <li><span class="step-num">3</span> Выберите способ оплаты</li>
             <li>
               <span class="step-num">4</span> Заявка отправляется администратору
@@ -186,6 +203,7 @@ function formatDisplay(val) {
   </div>
 </template>
 
+
 <style scoped>
 .application-page {
   min-height: 100vh;
@@ -193,7 +211,7 @@ function formatDisplay(val) {
   font-family: "Segoe UI", Roboto, system-ui, sans-serif;
 }
 
-/* Навбар (единый стиль) */
+
 .navbar {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
@@ -202,6 +220,7 @@ function formatDisplay(val) {
   top: 0;
   z-index: 50;
 }
+
 
 .nav-container {
   max-width: 1200px;
@@ -213,6 +232,7 @@ function formatDisplay(val) {
   height: 70px;
 }
 
+
 .logo {
   font-size: 24px;
   font-weight: 800;
@@ -222,15 +242,18 @@ function formatDisplay(val) {
   gap: 8px;
 }
 
+
 .logo span {
   font-size: 28px;
 }
+
 
 .nav-links {
   display: flex;
   align-items: center;
   gap: 24px;
 }
+
 
 .nav-link {
   text-decoration: none;
@@ -242,9 +265,11 @@ function formatDisplay(val) {
   transition: color 0.2s;
 }
 
+
 .nav-link:hover {
   color: #1e6f5c;
 }
+
 
 .logout-btn {
   background: none;
@@ -260,11 +285,12 @@ function formatDisplay(val) {
   transition: all 0.2s;
 }
 
+
 .logout-btn:hover {
   background: #fee2e2;
 }
 
-/* Основной контент */
+
 .application-content {
   max-width: 1100px;
   margin: 40px auto;
@@ -275,7 +301,7 @@ function formatDisplay(val) {
   align-items: start;
 }
 
-/* Карточка формы */
+
 .form-card {
   background: white;
   border-radius: 32px;
@@ -284,14 +310,17 @@ function formatDisplay(val) {
   transition: transform 0.2s;
 }
 
+
 .form-card:hover {
   transform: translateY(-2px);
 }
+
 
 .card-header {
   margin-bottom: 28px;
   text-align: center;
 }
+
 
 .card-header h2 {
   font-size: 28px;
@@ -300,16 +329,18 @@ function formatDisplay(val) {
   margin: 0 0 8px 0;
 }
 
+
 .card-header p {
   color: #5a6e7c;
   font-size: 14px;
   margin: 0;
 }
 
-/* Поля ввода */
+
 .input-group {
   margin-bottom: 24px;
 }
+
 
 .input-group label {
   display: block;
@@ -319,12 +350,14 @@ function formatDisplay(val) {
   font-size: 14px;
 }
 
+
 .select-wrapper,
 .date-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 
 .select-icon,
 .date-icon {
@@ -335,6 +368,7 @@ function formatDisplay(val) {
   z-index: 1;
   color: #7f8c8d;
 }
+
 
 select,
 input[type="date"] {
@@ -349,6 +383,7 @@ input[type="date"] {
   cursor: pointer;
 }
 
+
 select:focus,
 input:focus {
   outline: none;
@@ -356,9 +391,11 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.1);
 }
 
+
 input[type="date"] {
   padding-right: 12px;
 }
+
 
 .error-msg {
   display: block;
@@ -368,6 +405,7 @@ input[type="date"] {
   margin-left: 16px;
 }
 
+
 .date-hint {
   display: block;
   font-size: 12px;
@@ -376,17 +414,19 @@ input[type="date"] {
   margin-left: 16px;
 }
 
+
 .input-group.error select,
 .input-group.error input {
   border-color: #e53e3e;
 }
 
-/* Кнопки */
+
 .form-actions {
   display: flex;
   gap: 16px;
   margin-top: 32px;
 }
+
 
 .btn {
   display: inline-flex;
@@ -403,6 +443,7 @@ input[type="date"] {
   text-decoration: none;
 }
 
+
 .btn-primary {
   flex: 1;
   background: linear-gradient(95deg, #0f4c5f, #1e6f5c);
@@ -410,11 +451,13 @@ input[type="date"] {
   box-shadow: 0 4px 12px rgba(15, 76, 95, 0.2);
 }
 
+
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
   background: linear-gradient(95deg, #0e4152, #1a5e4e);
   box-shadow: 0 8px 18px rgba(15, 76, 95, 0.25);
 }
+
 
 .btn-outline {
   background: transparent;
@@ -422,15 +465,18 @@ input[type="date"] {
   color: #2c3e50;
 }
 
+
 .btn-outline:hover {
   background: #f1f5f9;
   border-color: #1e6f5c;
 }
 
+
 .btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
+
 
 .spinner {
   width: 18px;
@@ -441,13 +487,14 @@ input[type="date"] {
   animation: spin 0.6s linear infinite;
 }
 
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-/* Уведомления */
+
 .alert {
   padding: 12px 18px;
   border-radius: 60px;
@@ -458,17 +505,20 @@ input[type="date"] {
   font-size: 14px;
 }
 
+
 .alert-error {
   background: #fee2e2;
   color: #b91c1c;
   border-left: 4px solid #ef4444;
 }
 
+
 .alert-success {
   background: #d1fae5;
   color: #065f46;
   border-left: 4px solid #10b981;
 }
+
 
 .fade-enter-active,
 .fade-leave-active {
@@ -479,12 +529,13 @@ input[type="date"] {
   opacity: 0;
 }
 
-/* Правая панель */
+
 .info-side {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
+
 
 .image-card {
   border-radius: 28px;
@@ -493,9 +544,11 @@ input[type="date"] {
   transition: transform 0.3s;
 }
 
+
 .image-card:hover {
   transform: scale(1.01);
 }
+
 
 .image-card img {
   width: 100%;
@@ -504,12 +557,14 @@ input[type="date"] {
   display: block;
 }
 
+
 .info-card {
   background: white;
   border-radius: 28px;
   padding: 24px;
   box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.08);
 }
+
 
 .info-card h3 {
   font-size: 20px;
@@ -521,6 +576,7 @@ input[type="date"] {
   gap: 8px;
 }
 
+
 .steps-list {
   list-style: none;
   padding: 0;
@@ -530,6 +586,7 @@ input[type="date"] {
   gap: 14px;
 }
 
+
 .steps-list li {
   display: flex;
   align-items: center;
@@ -537,6 +594,7 @@ input[type="date"] {
   font-size: 14px;
   color: #1e2f3e;
 }
+
 
 .step-num {
   display: inline-flex;
@@ -552,7 +610,7 @@ input[type="date"] {
   flex-shrink: 0;
 }
 
-/* Адаптивность */
+
 @media (max-width: 820px) {
   .application-content {
     grid-template-columns: 1fr;
@@ -566,6 +624,7 @@ input[type="date"] {
     height: 180px;
   }
 }
+
 
 @media (max-width: 480px) {
   .nav-container {
@@ -594,3 +653,6 @@ input[type="date"] {
   }
 }
 </style>
+
+
+

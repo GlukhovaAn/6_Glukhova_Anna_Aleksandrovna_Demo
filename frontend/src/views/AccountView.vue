@@ -34,7 +34,7 @@ async function loadApplications() {
 
 function statusClass(status) {
   if (status === 'Новая') return 'status-new'
-  if (status === 'Идет обучение') return 'status-learning'
+  if (status === 'Подтверждена') return 'status-learning'
   return 'status-done'
 }
 
@@ -77,35 +77,32 @@ function formatDate(d) {
 
 <template>
   <div class="cabinet">
-    <!-- Современный навбар -->
     <nav class="navbar">
       <div class="nav-container">
         <div class="logo">
-          <span>⚓</span> Водить.РФ
+          Банкетам.Нет
         </div>
         <div class="nav-links">
           <div class="user-greeting">
-            <span class="user-icon">👤</span>
-            <span>{{ auth.user?.full_name || 'Пользователь' }}</span>
+            {{ auth.user?.full_name || 'Пользователь' }}
           </div>
           <router-link to="/application" class="nav-link">
-            <span>📝</span> Подать заявку
+            Подать заявку
           </router-link>
           <button @click="logout" class="logout-btn">
-            <span>🚪</span> Выйти
+            Выйти
           </button>
         </div>
       </div>
     </nav>
 
     <div class="cabinet-content">
-      <!-- Слайдер -->
       <div class="slider-wrap">
         <Slider />
       </div>
 
       <h2 class="section-title">
-        <span>📋</span> Мои заявки
+        Мои заявки
       </h2>
 
       <div v-if="loading" class="loading-state">
@@ -114,42 +111,33 @@ function formatDate(d) {
       </div>
 
       <div v-else-if="applications.length === 0" class="empty-state">
-        <div class="empty-icon">📭</div>
-        <h3>У вас пока нет заявок</h3>
-        <p>Оставьте первую заявку на обучение</p>
+        <div class="empty-icon"></div>
+        <h3>У вас пока нет бронирований</h3>
+        <p>Оставьте первую заявку на банкет</p>
         <router-link to="/application" class="btn btn-primary">
-          ✍️ Подать заявку
+          Забронировать помещение
         </router-link>
       </div>
 
       <div v-else class="applications-grid">
         <div v-for="app in applications" :key="app.id" class="app-card">
           <div class="app-header">
-            <div class="app-id-badge">Заявка #{{ app.id }}</div>
+            <div class="app-id-badge">Бронь #{{ app.id }}</div>
             <div class="status-badge" :class="statusClass(app.status)">
-              <span class="status-icon">
-                <span v-if="app.status === 'Новая'">🆕</span>
-                <span v-else-if="app.status === 'Идет обучение'">⚙️</span>
-                <span v-else>✅</span>
-              </span>
               {{ app.status }}
             </div>
           </div>
           <div class="app-details">
             <div class="detail-item">
-              <span class="detail-icon">🚢</span>
-              <span><strong>Транспорт:</strong> {{ app.transport_name }}</span>
+              <span><strong>Помещение:</strong> {{ app.hall_name }}</span>
             </div>
             <div class="detail-item">
-              <span class="detail-icon">💰</span>
               <span><strong>Оплата:</strong> {{ app.payment_name }}</span>
             </div>
             <div class="detail-item">
-              <span class="detail-icon">📅</span>
-              <span><strong>Дата начала:</strong> {{ formatDate(app.start_date) }}</span>
+              <span><strong>Дата мероприятия:</strong> {{ formatDate(app.event_date) }}</span>
             </div>
             <div class="detail-item">
-              <span class="detail-icon">🕒</span>
               <span><strong>Создана:</strong> {{ formatDate(app.created_at) }}</span>
             </div>
           </div>
@@ -158,33 +146,32 @@ function formatDate(d) {
             class="btn btn-secondary review-btn"
             @click="openReview(app.id)"
           >
-            <span>✍️</span> Оставить отзыв
+            Оставить отзыв
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Модальное окно отзыва -->
     <Teleport to="body">
       <div v-if="reviewAppId" class="modal-overlay" @click.self="closeReview">
         <div class="modal">
           <div class="modal-header">
             <h3>Оставить отзыв</h3>
-            <button class="modal-close" @click="closeReview">✕</button>
+            <button class="modal-close" @click="closeReview">Закрыть</button>
           </div>
           <div class="modal-body">
             <div v-if="reviewError" class="alert alert-error">
-              <span>⚠️</span> {{ reviewError }}
+              {{ reviewError }}
             </div>
             <div v-if="reviewSuccess" class="alert alert-success">
-              <span>✅</span> {{ reviewSuccess }}
+              {{ reviewSuccess }}
             </div>
             <div class="form-group">
               <label>Ваш отзыв</label>
               <textarea 
                 v-model="reviewText" 
                 rows="4" 
-                placeholder="Расскажите о своём опыте обучения..."
+                placeholder="Расскажите о вашем мероприятии..."
               ></textarea>
             </div>
           </div>
@@ -635,3 +622,4 @@ textarea:focus {
   }
 }
 </style>
+
